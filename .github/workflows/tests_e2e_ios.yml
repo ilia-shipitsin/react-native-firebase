@@ -1,24 +1,6 @@
 name: Testing E2E iOS
 
-on:
-  pull_request:
-    branches:
-      - '**'
-    paths-ignore:
-      - 'docs/**'
-      - 'website/**'
-      - '.spellcheck.dict.txt'
-      - '**/*.md'
-
-  push:
-    branches:
-      - main
-      - v14-release
-    paths-ignore:
-      - 'docs/**'
-      - 'website/**'
-      - '.spellcheck.dict.txt'
-      - '**/*.md'
+on: [ pull_request, push, workflow_dispatch ]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -27,11 +9,14 @@ concurrency:
 jobs:
   ios:
     name: iOS
-    runs-on: macos-13
-    # TODO matrix across APIs, at least 11 and 15 (lowest to highest)
+    runs-on: ${{ matrix.os }}
     timeout-minutes: 100
     env:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ 'macos-13', 'macos-12' ]
     steps:
       # macOS13 runners are slooooow
       # This is from: https://github.com/actions/runner-images/issues/7971#issuecomment-1824430407
@@ -193,6 +178,11 @@ jobs:
       - name: Detox Test
         timeout-minutes: 50
         run: yarn tests:ios:test-cover
+
+      - name: Display simulator log
+        if: always()
+        run: |
+          ls -l simulator.log
 
       - name: Compress Simulator Log
         if: always()
