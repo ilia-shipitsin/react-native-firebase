@@ -175,6 +175,10 @@ jobs:
         continue-on-error: true
         run: nohup sh -c "sleep 30 && xcrun simctl spawn booted log stream --level debug --style compact > simulator.log 2>&1 &"
 
+      - name: what is the virtualization ?
+        run: |
+          system_profiler SPSoftwareDataType SPHardwareDataType
+
       - name: Detox Test
         timeout-minutes: 50
         run: yarn tests:ios:test-cover
