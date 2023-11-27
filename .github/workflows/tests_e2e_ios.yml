@@ -183,21 +183,12 @@ jobs:
         timeout-minutes: 50
         run: yarn tests:ios:test-cover
 
-      - name: Display simulator log
-        if: always()
-        run: |
-          ls -l simulator.log
-
-      - name: Compress Simulator Log
-        if: always()
-        run: gzip -9 simulator.log
-
       - name: Upload Simulator Log
         uses: actions/upload-artifact@v3
         if: always()
         with:
-          name: simulator_log
-          path: simulator.log.gz
+          name: simulator_log-${{ matrix.os }}
+          path: simulator.log
 
       - uses: codecov/codecov-action@v3
         with:
