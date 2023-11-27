@@ -10,7 +10,7 @@ jobs:
   ios:
     name: iOS
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 100
+    timeout-minutes: 200
     env:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
     strategy:
@@ -18,11 +18,6 @@ jobs:
       matrix:
         os: [ 'macos-13', 'macos-12' ]
     steps:
-      # macOS13 runners are slooooow
-      # This is from: https://github.com/actions/runner-images/issues/7971#issuecomment-1824430407
-      - name: macOS-13-runner speedup
-        run: |
-          sudo launchctl unload -w /System/Library/LaunchDaemons/com.apple.diagnosticd.plist
 
       # https://bitrise.io/blog/post/xcode-15-performance-regressions
       - name: install yeetd
@@ -180,8 +175,13 @@ jobs:
           system_profiler SPSoftwareDataType SPHardwareDataType
 
       - name: Detox Test
-        timeout-minutes: 50
+        timeout-minutes: 100
         run: yarn tests:ios:test-cover
+
+      - name: log aggregate
+        if: always()
+        run: |
+          sudo log show --last 60m | awk '{print $8}' | sort | uniq -c | sort -rn | more
 
       - name: Upload Simulator Log
         uses: actions/upload-artifact@v3
@@ -189,10 +189,6 @@ jobs:
         with:
           name: simulator_log-${{ matrix.os }}
           path: simulator.log
-
-      - uses: codecov/codecov-action@v3
-        with:
-          verbose: true
 
       - uses: actions/cache/save@v3
         name: Yarn Cache Save
