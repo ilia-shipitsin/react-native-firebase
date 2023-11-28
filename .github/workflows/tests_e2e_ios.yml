@@ -19,12 +19,12 @@ jobs:
         os: [ 'macos-13', 'macos-12' ]
     steps:
 
-#      # https://bitrise.io/blog/post/xcode-15-performance-regressions
-#      - name: install yeetd
-#        run: |
-#          wget https://github.com/biscuitehh/yeetd/releases/download/1.0/yeetd-normal.pkg
-#          sudo installer -pkg yeetd-normal.pkg -target /
-#          yeetd &
+      # https://bitrise.io/blog/post/xcode-15-performance-regressions
+      - name: install yeetd
+        run: |
+          wget https://github.com/biscuitehh/yeetd/releases/download/1.0/yeetd-normal.pkg
+          sudo installer -pkg yeetd-normal.pkg -target /
+          yeetd &
 
       # Set up tool versions
       - uses: actions/setup-node@v3
@@ -189,6 +189,13 @@ jobs:
         with:
           name: simulator_log-${{ matrix.os }}
           path: simulator.log
+
+      - name: Upload system Log
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: system-log-${{ matrix.os }}
+          path: /var/log/system.log
 
       - uses: actions/cache/save@v3
         name: Yarn Cache Save
