@@ -181,7 +181,7 @@ jobs:
       - name: log aggregate
         if: always()
         run: |
-          sudo log show --last 60m | awk '{print $8}' | sort | uniq -c | sort -rn | more
+          sudo log show --last 60m | awk '{print $8}' | sort | uniq -c | sort -rn
 
       - name: Upload Simulator Log
         uses: actions/upload-artifact@v3
@@ -194,8 +194,8 @@ jobs:
         uses: actions/upload-artifact@v3
         if: always()
         with:
-          name: system-log-${{ matrix.os }}
-          path: /var/log/system.log
+          name: log-${{ matrix.os }}
+          path: /var/log
 
       - uses: actions/cache/save@v3
         name: Yarn Cache Save
