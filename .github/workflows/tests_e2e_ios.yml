@@ -73,8 +73,9 @@ jobs:
           retry_wait_seconds: 60
           max_attempts: 3
           command: yarn && yarn lerna:prepare
-
+      
       - name: Setup Ruby
+        if: ${{ matrix.os != 'self-hosted' }}
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: 3
